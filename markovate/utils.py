@@ -110,7 +110,7 @@ def parse_schema_information(openapi: dict, schema: dict):
                     )
                 else:
                     property_types.append(
-                        _type,
+                        "NULL" if _type == 'null' else _type,
                     )
             property_type = ', '.join(property_types)
         if ref is None:
@@ -118,7 +118,7 @@ def parse_schema_information(openapi: dict, schema: dict):
                 "- **{}**{}: {} [{}]{}".format(
                     property_name,
                     "*" if property_name in schema.get('required', []) else '',
-                    title,
+                    title or '',
                     property_type,
                     f"\n\n\t {property_data['description']}" if property_data.get('description') else '',
                 )
