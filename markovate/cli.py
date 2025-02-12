@@ -28,7 +28,22 @@ def generate(
         openapi = load_openapi(openapi_file_name)
         markdown_string = generate_markdown_string(openapi, source)
         if language != LANGUAGE.EN:
-            markdown_string = translate_markdown_string(markdown_string, language)
+            translated_parts = []
+            current_part = ''
+            for part in markdown_string.split('\n\n\n\n'):
+                if len(current_part + part) > 5000:
+                    translated_parts.append(
+                        translate_markdown_string(current_part, language)
+                    )
+                    current_part = part
+                else:
+                    current_part = '\n\n\n\n'.join([current_part, part])
+            else:
+                if len(current_part) > 0:
+                    translated_parts.append(
+                        translate_markdown_string(current_part, language)
+                    )
+            markdown_string = '\n\n\n\n'.join(translated_parts)
         save_to_markdown_file(markdown_string, markdown_file_name)
         typer.secho(
             f"""Markdown[{markdown_file_name}] generated for OpenAPI[{openapi_file_name}] specification.\n\n"""
